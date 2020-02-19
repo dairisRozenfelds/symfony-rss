@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+    <Register
+        submit-route="{{ submitRoute }}"
+        csrf-token="{{ csrf_token(formPrefix) }}"
+        form-prefix="{{ formPrefix }}"></Register>
+{% endblock %}

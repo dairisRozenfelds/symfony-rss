@@ -11,9 +11,11 @@
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
+        {% block before_content %}{% endblock %}
         <div class="content" id="app">
-            {% block body %}{% endblock %}
+            {% block content %}{% endblock %}
         </div>
-        <script src="{{ asset('build/app.js') }}"></script>
+        {% block after_content %}{% endblock %}
+        {{ encore_entry_script_tags('app') }}
     </body>
 </html>

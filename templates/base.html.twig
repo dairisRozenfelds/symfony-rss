@@ -1,12 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
-        <meta charset="UTF-8">
+        <meta charset="utf-8">
+        <title>Homework</title>
+        <meta name="description" content="Homework">
+        <meta name="author" content="Dairis Rozenfelds">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>{% block title %}Welcome!{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+        <div class="content" id="app">
+            {% block body %}{% endblock %}
+        </div>
+        <script src="{{ asset('build/app.js') }}"></script>
     </body>
 </html>

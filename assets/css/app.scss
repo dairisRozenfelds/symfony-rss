@@ -1,3 +1,7 @@
+@import "~bootstrap/scss/bootstrap";
+@import "variables";
+@import "components/forms";
+
 body {
-    background-color: lightgray;
+    background-color: $bg-color;
 }

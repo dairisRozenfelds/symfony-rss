@@ -1,23 +1,50 @@
 <template>
-    <div class="register-wrapper">
-        <div class="register-form">
-            <h1 class="form-title">Registration</h1>
-            <div class="form-error">
-                <span class="error-text">{{ formError }}</span>
+    <div class="register-wrapper row justify-content-md-center mt-5">
+        <div class="register-form col-6">
+            <h1 class="form-title mb-3">Registration</h1>
+            <div class="alert alert-success" role="alert" v-if="showSuccess">
+                Registered successfully! Redirecting to the homepage...
+            </div>
+            <div class="alert alert-danger" role="alert" v-if="submitErrorMessage">
+                <small>{{ submitErrorMessage }}</small>
             </div>
             <div class="form-group">
                 <label for="inputEmail">Email</label>
-                <input type="text" name="inputEmail" id="inputEmail" autofocus v-model="email">
-                <div class="form-input-error">
-                    <span class="error-text">{{ emailError }}</span>
+                <input
+                    type="email"
+                    name="inputEmail"
+                    id="inputEmail"
+                    class="form-control"
+                    v-model="email"
+                    v-on:change="validateEmail"
+                    placeholder="Enter e-mail"
+                    autofocus>
+                <div class="form-input-error pt-2" v-if="formErrors.email">
+                    <small class="error-text text-danger" v-for="errorMessage in formErrors.email">{{ errorMessage }}</small>
                 </div>
             </div>
             <div class="form-group">
                 <label for="inputPassword" v-model="password">Password</label>
-                <input type="password" name="inputPassword" id="inputPassword" v-model="password">
+                <input
+                    type="password"
+                    name="inputPassword"
+                    id="inputPassword"
+                    class="form-control"
+                    v-model="password"
+                    v-on:change="clearErrors('password')"
+                    placeholder="Enter password">
+                <div class="form-input-error pt-2" v-if="formErrors.password">
+                    <small class="error-text text-danger" v-for="errorMessage in formErrors.password">{{ errorMessage }}</small>
+                </div>
             </div>
             <div class="actions">
-                <button class="btn btn-primary" type="submit" id="buttonSubmitRegister" v-on:click="submitForm">Register</button>
+                <button class="btn btn-primary" type="submit" id="buttonSubmitRegister" v-on:click="submitForm">
+                    <span class="loading" v-if="loading">
+                        <span class="spinner-border spinner-border-sm"></span>
+                        Loading...
+                    </span>
+                    <span class="waiting" v-else>Register</span>
+                </button>
             </div>
         </div>
     </div>
@@ -31,7 +58,11 @@
         extends: FormComponent,
         name: "Register",
         props: {
-            formPrefix: {
+            validateEmailRoute: {
+                type: String,
+                required: true
+            },
+            submitRedirectRoute: {
                 type: String,
                 required: true
             }
@@ -41,31 +72,68 @@
             return {
                 email: null,
                 password: null,
-                emailError: null,
-                formError: null
+                formErrors: {
+                    email: null,
+                    password: null
+                },
+                loading: false,
+                showSuccess: false
             }
         },
 
         methods: {
             submitForm() {
-                const emailInput = this.formatInputName('email');
-                const passwordInput = this.formatInputName('plainPassword');
+                this.loading = true;
 
                 $.post(this.submitRoute, {
-                    emailInput: this.email,
-                    passwordInput: this.password
+                    email: this.email,
+                    password: this.password,
+                    token: this.csrfToken
                 })
-                .then((response) => {
-                    console.log(response);
-                })
-                .fail((response) => {
-                    console.log(response);
-                });
+                .then(this.handleSubmitFormSuccess)
+                .catch(this.handleSubmitFormError)
             },
 
-            formatInputName(name) {
-                return this.formPrefix + '[' + name + ']';
-            }
+            validateEmail() {
+                this.clearErrors('email');
+                this.submitValidateEmail();
+            },
+
+            submitValidateEmail() {
+                $.post(this.validateEmailRoute, {
+                    email: this.email,
+                })
+                .then(this.handleSubmitValidateEmailSuccess);
+            },
+
+            handleSubmitFormSuccess(response) {
+                const responseData = response.data;
+
+                if (responseData && responseData.success) {
+                    this.showSuccess = true;
+
+                    setTimeout(() => {
+                        window.location.replace(this.submitRedirectRoute);
+                    }, 5000);
+                } else if (responseData.errors) {
+                    this.formErrors = {...this.formErrors, ...responseData.errors}
+                }
+
+                this.loading = false;
+            },
+
+            handleSubmitFormError() {
+                this.loading = false;
+                this.showSubmitErrorMessage();
+            },
+
+            handleSubmitValidateEmailSuccess(response) {
+                const responseData = response.data;
+
+                if (responseData && !responseData.success) {
+                    this.formErrors = {...this.formErrors, ...responseData.errors}
+                }
+            },
         }
     }
 </script>

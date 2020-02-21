@@ -5,6 +5,7 @@
 {% block content %}
     <Register
         submit-route="{{ submitRoute }}"
-        csrf-token="{{ csrf_token(formPrefix) }}"
-        form-prefix="{{ formPrefix }}"></Register>
+        validate-email-route="{{ validateEmailRoute }}"
+        submit-redirect-route="{{ submitRedirectRoute }}"
+        csrf-token="{{ csrf_token(tokenName) }}"></Register>
 {% endblock %}

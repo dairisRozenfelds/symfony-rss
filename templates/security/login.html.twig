@@ -4,7 +4,8 @@
 
 {% block content %}
     <Login
-        submit-route="{{ loginSubmitRoute }}"
-        csrf-token="{{ csrf_token('authenticate') }}"
+        submit-route="{{ submitRoute }}"
+        submit-redirect-route="{{ submitRedirectRoute }}"
+        csrf-token="{{ csrf_token(tokenName) }}"
         register-route="{{ registerRoute }}"></Login>
 {% endblock %}

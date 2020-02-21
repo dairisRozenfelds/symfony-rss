@@ -1,0 +1,5 @@
+validation:
+    csrf_invalid: 'Invalid CSRF token, please refresh the page and try again.'
+    email_not_found: 'Email could not be found.'
+    auth_error: 'There was an error with authentication.'
+    bad_credentials: 'Incorrect credentials.'

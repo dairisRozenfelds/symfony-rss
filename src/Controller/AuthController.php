@@ -2,16 +2,33 @@
 
 namespace App\Controller;
 
-use Exception;
+use App\Tools\Validator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class AuthController extends AbstractController
 {
+    const CSRF_TOKEN_NAME = 'login';
+
     /**
-     * @Route("/login", name="app_login")
+     * @var Validator
+     */
+    private $validator;
+
+    /**
+     * AuthController constructor.
+     * @param Validator $validator
+     */
+    public function __construct(Validator $validator)
+    {
+        $this->validator = $validator;
+    }
+
+    /**
+     * @Route("/login", name="app_login_get", methods={"GET"})
      * @param AuthenticationUtils $authenticationUtils
      * @return Response
      */
@@ -22,17 +39,28 @@ class AuthController extends AbstractController
          }
 
         return $this->render('security/login.html.twig', [
-            'submitRoute' => $this->generateUrl('app_login'),
-            'registerRoute' => $this->generateUrl('app_register')
+            'submitRoute' => $this->generateUrl('app_login_post'),
+            'submitRedirectRoute' => $this->generateUrl('index'),
+            'registerRoute' => $this->generateUrl('app_register_get'),
+            'tokenName' => self::CSRF_TOKEN_NAME
         ]);
     }
 
     /**
-     * @Route("/logout", name="app_logout")
-     * @throws Exception
+     * @Route("/login", name="app_login_post", methods={"POST"})
+     * @return void
      */
-    public function logout()
+    public function loginAjax(): void
     {
-        throw new Exception('This method can be blank - it will be intercepted by the logout key on your firewall');
+        return;
+    }
+
+    /**
+     * @Route("/logout", name="app_logout", methods={"GET"})
+     * @return void
+     */
+    public function logout(): void
+    {
+        return;
     }
 }

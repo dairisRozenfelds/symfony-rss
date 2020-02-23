@@ -5,7 +5,7 @@ The app is built on Symfony 5.0.4
 ## Setup
 
 1. Go to the project's root folder
-2. Create a new .env.local file and configure it with the credentials ```cp .env .env.local```
+2. Create a new .env.local file and configure it ```cp .env .env.local``` (database configuration docs: https://symfony.com/doc/current/doctrine.html#configuring-the-database)
 3. Install composer dependencies ```composer install```
 4. Install node packages ```npm install``` or ```yarn install```
 5. Setup the app on the server, you need to follow the basic Symfony installation (available: https://symfony.com/doc/current/setup.html)

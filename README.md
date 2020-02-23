@@ -5,12 +5,13 @@ The app is built on Symfony 5.0.4
 ## Setup
 
 1. Go to the project's root folder
-2. Install composer dependencies ```composer install```
-3. Install node packages ```npm install``` or ```yarn install```
-4. Setup the app on the server, you need to follow the basic Symfony installation (available: https://symfony.com/doc/current/setup.html)
-5. Run migrations ```php bin/console doctrine:migrations:migrate```
-6. Load fixtures ```php bin/console doctrine:fixtures:load```
-7. Compile assets ```npm run dev``` or ```yarn run dev``` (development mode)
+2. Create a new .env.local file and configure it with the credentials ```cp .env .env.local```
+3. Install composer dependencies ```composer install```
+4. Install node packages ```npm install``` or ```yarn install```
+5. Setup the app on the server, you need to follow the basic Symfony installation (available: https://symfony.com/doc/current/setup.html)
+6. Run migrations ```php bin/console doctrine:migrations:migrate```
+7. Load fixtures ```php bin/console doctrine:fixtures:load```
+8. Compile assets ```npm run dev``` or ```yarn run dev``` (development mode)
 
 ## Notes
 

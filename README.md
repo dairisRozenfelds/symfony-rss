@@ -7,7 +7,7 @@ The app is built on Symfony 5.0.4
 1. Go to the project's root folder
 2. Install composer dependencies ```composer install```
 3. Install node packages ```npm install``` or ```yarn install```
-4. Setup the app on the server, you need to follow the basic Symfony installation (available [here]: https://symfony.com/doc/current/setup.html)
+4. Setup the app on the server, you need to follow the basic Symfony installation (available: https://symfony.com/doc/current/setup.html)
 5. Run migrations ```php bin/console doctrine:migrations:migrate```
 6. Load fixtures ```php bin/console doctrine:fixtures:load```
 7. Compile assets ```npm run dev``` or ```yarn run dev``` (development mode)

@@ -2,10 +2,9 @@
 
 namespace App\Tools\RssParsers;
 
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Serializer\Serializer;
-use Symfony\Component\Serializer\Encoder\CsvEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use App\Entity\EnglishCommonWord;
+use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use function simplexml_load_file;
 
 class TheRegisterParser
@@ -16,32 +15,26 @@ class TheRegisterParser
     protected $url = 'https://www.theregister.co.uk/software/headlines.atom';
 
     /**
-     * Name for the csv file containing the most common words located in project's "assets/csv" folder
-     * @var string
-     */
-    protected $commonWordCsvFilename = 'most_common_words.csv';
-
-    /**
      * @var int
      */
     protected $topCommonWordReturnCount = 10;
 
     /**
-     * @var KernelInterface
+     * @var EntityManagerInterface
      */
-    private $kernel;
+    private $entityManager;
 
     /**
      * TheRegisterParser constructor.
-     * @param KernelInterface $kernel
+     * @param EntityManagerInterface $entityManager
      */
-    public function __construct(KernelInterface $kernel)
+    public function __construct(EntityManagerInterface $entityManager)
     {
-        $this->kernel = $kernel;
+        $this->entityManager = $entityManager;
     }
 
     /**
-     *
+     * @return array
      */
     public function parse(): array
     {
@@ -51,10 +44,12 @@ class TheRegisterParser
         if ($feed) {
             foreach ($feed->entry as $entry) {
                 $entryArray['id'] = (string)$entry->id;
-                $entryArray['updated'] = (string)$entry->updated;
+                $entryArray['updated_at'] = DateTime::createFromFormat(DateTime::ATOM, (string)$entry->updated)
+                    ->format('Y-m-d H:i:s');
                 $entryArray['author_name'] = (string)($entry->author->name);
                 $entryArray['title'] = (string)$entry->title;
-                $entryArray['summary'] = (string)$entry->summary;
+                $entryArray['content_summary'] = strip_tags((string)$entry->summary);
+                $entryArray['link'] = (string)$entry->link['href'];
 
                 $result['entries'][] = $entryArray;
             }
@@ -66,6 +61,14 @@ class TheRegisterParser
     }
 
     /**
+     * Counts and returns the most common words from the provided string in the format:
+     * [
+     *     [
+     *         'word' => WORD,
+     *         'count' => COUNT
+     *     ]
+     * ]
+     *
      * @param $result
      * @return array
      */
@@ -74,10 +77,10 @@ class TheRegisterParser
         $wordCount = [];
 
         foreach ($result as $entry) {
-            $wordArray = explode(' ', trim(strip_tags($entry['summary'])));
+            $wordArray = preg_split('/(\s)|([.,\/#!$%\^&\*;:{}=\-_`~()"])/', $entry['content_summary'], -1, PREG_SPLIT_NO_EMPTY);;
 
             foreach ($wordArray as $word) {
-                $word = preg_replace('/[^A-Za-z\-]/', '', $word);
+                $word = preg_replace('/[^A-Za-z\-\']/', '', $word);
 
                 if ($word === '') {
                     continue;
@@ -95,36 +98,32 @@ class TheRegisterParser
 
         $mostCommonWords = $this->getMostCommonWords();
 
+        // Exclude the most common words from the word count array
         foreach ($mostCommonWords as $commonWord) {
-            if (array_key_exists($commonWord, $wordCount)) {
-                unset($wordCount[$commonWord]);
+            if (array_key_exists($commonWord->getWord(), $wordCount)) {
+                unset($wordCount[$commonWord->getWord()]);
             }
         }
 
         arsort($wordCount);
 
-        return array_slice($wordCount, 0, 10, true);
+        $result = [];
+
+        foreach (array_slice($wordCount, 0, $this->topCommonWordReturnCount, true) as $word => $count) {
+            $result[] = [
+                'word' => $word,
+                'word_count' => $count
+            ];
+        }
+
+        return $result;
     }
 
     /**
-     * @return array
+     * @return EnglishCommonWord[]
      */
     protected function getMostCommonWords()
     {
-        $serializer = new Serializer([new ObjectNormalizer()], [new CsvEncoder([CsvEncoder::NO_HEADERS_KEY => true])]);
-        $rawCsvValues = $serializer->decode(
-            file_get_contents($this->kernel->getProjectDir() . '/assets/csv/' . $this->commonWordCsvFilename),
-            'csv'
-        );
-
-        $formattedArray = [];
-
-        foreach ($rawCsvValues as $csvValue) {
-            if (isset($csvValue[0])) {
-                $formattedArray[] = strtolower(trim($csvValue[0]));
-            }
-        }
-
-        return $formattedArray;
+        return $this->entityManager->getRepository(EnglishCommonWord::class)->findAll();
     }
 }

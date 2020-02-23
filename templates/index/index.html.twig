@@ -3,5 +3,5 @@
 {% block title %}RSS feed reader{% endblock %}
 
 {% block content %}
-    <Index></Index>
+    <Index :rss-data="{{ rssData|json_encode }}"></Index>
 {% endblock %}

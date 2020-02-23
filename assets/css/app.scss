@@ -1,7 +1,3 @@
 @import "~bootstrap/scss/bootstrap";
 @import "variables";
-@import "components/forms";
-
-body {
-    background-color: $bg-color;
-}
+@import "pages/index";

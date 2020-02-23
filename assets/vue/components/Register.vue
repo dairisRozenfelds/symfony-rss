@@ -3,7 +3,7 @@
         <div class="register-form col-6">
             <h1 class="form-title mb-3">Registration</h1>
             <div class="alert alert-success" role="alert" v-if="showSuccess">
-                Registered successfully! Redirecting to the homepage...
+                Registered successfully! Redirecting to the login page...
             </div>
             <div class="alert alert-danger" role="alert" v-if="submitErrorMessage">
                 <small>{{ submitErrorMessage }}</small>
@@ -114,7 +114,7 @@
 
                     setTimeout(() => {
                         window.location.replace(this.submitRedirectRoute);
-                    }, 5000);
+                    }, 3500);
                 } else if (responseData.errors) {
                     this.formErrors = {...this.formErrors, ...responseData.errors}
                 }

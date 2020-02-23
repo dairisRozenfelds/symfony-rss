@@ -88,6 +88,13 @@ class RegistrationController extends AbstractController
             ]);
         }
 
+        if ($this->checkEmailExists($content['email'])) {
+            return new JsonResponse([
+                'success' => false,
+                'errors' => ['email' => ['User with the e-mail already exists.']]
+            ]);
+        }
+
         $user = new User();
         $user->setEmail($content['email'] ?? null);
         $user->setPassword(
@@ -111,7 +118,7 @@ class RegistrationController extends AbstractController
      * @param Request $request
      * @return JsonResponse
      */
-    public function validateEmail(Request $request): JsonResponse
+    public function validateEmailAjax(Request $request): JsonResponse
     {
         $content = json_decode($request->getContent(), true);
 
@@ -129,11 +136,7 @@ class RegistrationController extends AbstractController
             ]);
         }
 
-        // Validate if the e-mail address already exists
-        $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository(User::class)->findOneBy(['email' => $content['email']]);
-
-        if ($user) {
+        if ($this->checkEmailExists($content['email'])) {
             return new JsonResponse([
                 'success' => false,
                 'errors' => ['email' => ['User with the e-mail already exists.']]
@@ -143,5 +146,22 @@ class RegistrationController extends AbstractController
         return new JsonResponse([
             'success' => true
         ]);
+    }
+
+    /**
+     * @param string $email
+     * @return bool
+     */
+    protected function checkEmailExists(string $email): bool
+    {
+        // Validate if the e-mail address already exists
+        $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if ($user) {
+            return true;
+        }
+
+        return false;
     }
 }

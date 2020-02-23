@@ -16,6 +16,7 @@ The app is built on Symfony 5.0.4
 ## Notes
 
 The results from the RSS feed parser are cached and cache is invalidated every 4 hours.
+The most common english words are loaded from a CSV file (src/DataFixtures/data/csv/english_most_common_words.csv) when loading doctrine fixtures.
 
 ## Tests
 

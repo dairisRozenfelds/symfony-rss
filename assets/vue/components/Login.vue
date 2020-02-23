@@ -1,5 +1,5 @@
 <template>
-    <div class="login-wrapper row justify-content-md-center mt-5">
+    <div class="login-wrapper row justify-content-center mt-5">
         <div class="login-form col-6">
             <h1 class="form-title mb-3">Login</h1>
             <div class="alert alert-danger" role="alert" v-if="submitErrorMessage">

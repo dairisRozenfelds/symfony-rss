@@ -1,5 +1,5 @@
 <template>
-    <div class="register-wrapper row justify-content-md-center mt-5">
+    <div class="register-wrapper row justify-content-center mt-5">
         <div class="register-form col-6">
             <h1 class="form-title mb-3">Registration</h1>
             <div class="alert alert-success" role="alert" v-if="showSuccess">
